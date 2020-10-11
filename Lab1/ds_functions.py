@@ -2,11 +2,11 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.ticker as ticker
 import warnings
 import sklearn.metrics as metrics
 import config as cfg
 import datetime as dt
-
 
 mdates._reset_epoch_test_example()
 mdates.set_epoch('0000-12-31T00:00:00')  # old epoch (pre MPL 3.3)
@@ -23,9 +23,14 @@ def choose_grid(nr):
         return (nr // NR_COLUMNS, NR_COLUMNS) if nr % NR_COLUMNS == 0 else (nr // NR_COLUMNS + 1, NR_COLUMNS)
 
 
-def set_axes(xvalues: list, ax: plt.Axes = None, title: str = '', xlabel: str = '', ylabel: str = '', percentage=False):
+def set_axes(xvalues: list, ax: plt.Axes = None, title: str = '', xlabel: str = '', ylabel: str = '', percentage=False, hidegrid=False):
+
     if ax is None:
         ax = plt.gca()
+    
+    if hidegrid:
+        ax.grid(False)
+
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -33,7 +38,7 @@ def set_axes(xvalues: list, ax: plt.Axes = None, title: str = '', xlabel: str = 
         ax.set_ylim(0.0, 1.0)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.set_xticklabels(xvalues, fontsize='small', ha='center')
+    ax.set_xticklabels(xvalues, fontsize='small', ha='center', rotation=90)
 
     return ax
 
@@ -46,6 +51,8 @@ def set_locators(xvalues: list, ax: plt.Axes = None):
     else:
         ax.set_xticks(xvalues)
         ax.set_xlim(xvalues[0], xvalues[-1])
+        ax.xaxis.set_major_locator(plt.MaxNLocator(10))
+
 
     return ax
 
@@ -58,10 +65,10 @@ def plot_line(xvalues: list, yvalues: list, ax: plt.Axes = None, title: str = ''
 
 
 def multiple_line_chart(xvalues: list, yvalues: dict, ax: plt.Axes = None, title: str = '',
-                        xlabel: str = '', ylabel: str = '', percentage=False):
-    ax = set_axes(xvalues, ax=ax, title=title, xlabel=xlabel, ylabel=ylabel, percentage=percentage)
+                        xlabel: str = '', ylabel: str = '', percentage=False, hidegrid=False):
+    ax = set_axes(xvalues, ax=ax, title=title, xlabel=xlabel, ylabel=ylabel, percentage=percentage, hidegrid=hidegrid)
     ax = set_locators(xvalues, ax=ax)
-
+    
     legend: list = []
     for name, y in yvalues.items():
         ax.plot(xvalues, y)
@@ -70,14 +77,14 @@ def multiple_line_chart(xvalues: list, yvalues: dict, ax: plt.Axes = None, title
 
 
 def bar_chart(xvalues: list, yvalues: list, ax: plt.Axes = None, title: str = '',
-              xlabel: str = '', ylabel: str = '', percentage=False):
-    ax = set_axes(xvalues, ax=ax, title=title, xlabel=xlabel, ylabel=ylabel, percentage=percentage)
+              xlabel: str = '', ylabel: str = '', percentage=False, hidegrid=False):
+    ax = set_axes(xvalues, ax=ax, title=title, xlabel=xlabel, ylabel=ylabel, percentage=percentage, hidegrid=hidegrid)
     ax.bar(xvalues, yvalues, edgecolor=cfg.LINE_COLOR, color=cfg.FILL_COLOR)
 
 
 def multiple_bar_chart(xvalues: list, yvalues: dict, ax: plt.Axes = None, title: str = '',
-                       xlabel: str = '', ylabel: str = '', percentage=False):
-    ax = set_axes(xvalues, ax=ax, title=title, xlabel=xlabel, ylabel=ylabel, percentage=percentage)
+                       xlabel: str = '', ylabel: str = '', percentage=False, hidegrid=False):
+    ax = set_axes(xvalues, ax=ax, title=title, xlabel=xlabel, ylabel=ylabel, percentage=percentage, hidegrid=hidegrid)
 
     x = np.arange(len(xvalues))  # the label locations
 
