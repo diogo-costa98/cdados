@@ -134,7 +134,11 @@ def plot_evaluation_results(labels: np.ndarray, trn_y, prd_trn, tst_y, prd_tst):
     fig, axs = plt.subplots(1, 2, figsize=(2 * HEIGHT, HEIGHT))
     multiple_bar_chart(['Train', 'Test'], evaluation, ax=axs[0], title="Model's performance over Train and Test sets")
     plot_confusion_matrix(cnf_mtx_tst, labels, ax=axs[1])
-
+    print("Confusion Matrix Test")
+    print("TruePositives: ", tn_tst)
+    print("FalsePositives: ", fn_tst)
+    print("TrueNegatives: ", tp_tst)
+    print("FalseNegatives: ", fp_tst)
 
 def plot_roc_chart(models: dict, tstX: np.ndarray, tstY: np.ndarray, ax: plt.Axes = None, target: str = 'class'):
     if ax is None:
