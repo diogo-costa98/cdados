@@ -125,11 +125,16 @@ def plot_evaluation_results(labels: np.ndarray, trn_y, prd_trn, tst_y, prd_tst, 
     cnf_mtx_tst = metrics.confusion_matrix(tst_y, prd_tst, labels)
     tn_tst, fp_tst, fn_tst, tp_tst = cnf_mtx_tst.ravel()
 
+    accuracy = (tn_tst + tp_tst) / (tn_tst + tp_tst + fp_tst + fn_tst)
+    recall = tp_tst / (tp_tst + fn_tst)
+    specificity = tn_tst / (tn_tst + fp_tst)
+    precision = tp_tst / (tp_tst + fp_tst)
+
     evaluation = {'Accuracy': [(tn_trn + tp_trn) / (tn_trn + tp_trn + fp_trn + fn_trn),
-                               (tn_tst + tp_tst) / (tn_tst + tp_tst + fp_tst + fn_tst)],
-                  'Recall': [tp_trn / (tp_trn + fn_trn), tp_tst / (tp_tst + fn_tst)],
-                  'Specificity': [tn_trn / (tn_trn + fp_trn), tn_tst / (tn_tst + fp_tst)],
-                  'Precision': [tp_trn / (tp_trn + fp_trn), tp_tst / (tp_tst + fp_tst)]}
+                               accuracy],
+                  'Recall': [tp_trn / (tp_trn + fn_trn), recall],
+                  'Specificity': [tn_trn / (tn_trn + fp_trn), specificity],
+                  'Precision': [tp_trn / (tp_trn + fp_trn), precision]}
 
     fig, axs = plt.subplots(1, 2, figsize=(2 * HEIGHT, HEIGHT))
     multiple_bar_chart(['Train', 'Test'], evaluation, ax=axs[0], title="Model's performance over Train and Test sets", percentage = percentage)
@@ -139,6 +144,7 @@ def plot_evaluation_results(labels: np.ndarray, trn_y, prd_trn, tst_y, prd_tst, 
     print("FalsePositives: ", fn_tst)
     print("TrueNegatives: ", tp_tst)
     print("FalseNegatives: ", fp_tst)
+    return {'accuracy': accuracy, 'recall': recall, 'specificity': specificity, 'precision': precision}
 
 def plot_roc_chart(models: dict, tstX: np.ndarray, tstY: np.ndarray, ax: plt.Axes = None, target: str = 'class'):
     if ax is None:
